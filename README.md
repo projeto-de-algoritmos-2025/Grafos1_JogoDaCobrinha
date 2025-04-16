@@ -6,8 +6,8 @@
 ## Alunos
 |Matrícula | Aluno |
 | -- | -- |
-| 22/2031045  |  Wallyson Paulo Costa Souza |
-| 22/2037737  |  Kaio Macedo Santana |
+| 22/2006196  |  Wallyson Paulo Costa Souza |
+| 22/2006893  |  Kaio Macedo Santana |
 
 ## Sobre 
 Descreva os objetivos do seu projeto e como ele funciona. 
