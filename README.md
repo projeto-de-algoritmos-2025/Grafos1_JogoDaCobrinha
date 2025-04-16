@@ -6,8 +6,8 @@
 ## Alunos
 |Matrícula | Aluno |
 | -- | -- |
-| 22/2031045  |  Caio Magalhães Lamego |
-| 22/2037737  |  Matheus de Siqueira Brant |
+| 22/2031045  |  Wallyson Paulo Costa Souza |
+| 22/2037737  |  Kaio Macedo Santana |
 
 ## Sobre 
 Descreva os objetivos do seu projeto e como ele funciona. 
