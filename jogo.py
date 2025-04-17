@@ -1,6 +1,8 @@
 import pygame
 from collections import deque
 from enum import Enum
+import random
+
 
 # Inicializar o pygame
 pygame.init()
@@ -47,47 +49,47 @@ class Snake:
         self.score = 0
         self.grow = False
 
- def update(self):
-    if not self.is_alive:
-        return
+    def update(self):
+        if not self.is_alive:
+            return
 
-    # Obtém a posição atual da cabeça
-    current = self.positions[0]
+        # Obtém a posição atual da cabeça
+        current = self.positions[0]
 
-    # Determina a nova posição da cabeça
-    x, y = current
-    dx, dy = self.direction.value
-    new_position = ((x + dx) % GRID_WIDTH, (y + dy) % GRID_HEIGHT)
+        # Determina a nova posição da cabeça
+        x, y = current
+        dx, dy = self.direction.value
+        new_position = ((x + dx) % GRID_WIDTH, (y + dy) % GRID_HEIGHT)
 
-    # Verifica colisão com o próprio corpo
-    if new_position in self.positions[1:]:
-        self.is_alive = False
-        return
+         # Verifica colisão com o próprio corpo
+        if new_position in self.positions[1:]:
+            self.is_alive = False
+            return
 
-    # Move a cobrinha
-    self.positions.insert(0, new_position)
-    self.head_position = new_position
+        # Move a cobrinha
+        self.positions.insert(0, new_position)
+        self.head_position = new_position
 
-    # Remove o final da cauda se não estiver crescendo
-    if not self.grow:
-        self.positions.pop()
-    else:
-        self.grow = False
-        self.score += 1
+        # Remove o final da cauda se não estiver crescendo
+        if not self.grow:
+            self.positions.pop()
+        else:
+            self.grow = False
+            self.score += 1
 
-def grow_snake(self):
-    self.grow = True
+    def grow_snake(self):
+        self.grow = True
 
-def change_direction(self, direction):
+    def change_direction(self, direction):
     # Não pode mudar para a direção oposta
-    opposite_directions = {
+        opposite_directions = {
         Direction.UP: Direction.DOWN,
         Direction.DOWN: Direction.UP,
         Direction.LEFT: Direction.RIGHT,
         Direction.RIGHT: Direction.LEFT
     }
-    if direction != opposite_directions[self.direction]:
-        self.direction = direction
+        if direction != opposite_directions[self.direction]:
+         self.direction = direction
 
 class Food:
     def __init__(self):
@@ -140,3 +142,98 @@ class Graph:
         elif dy == -1 or (dy > 0 and dy != 1):
             return Direction.UP
         return None
+    
+    def bfs(self):
+        """aqui é o algoritmo da BFS pra encontrar o menor caminho até a comida"""
+        start = self.snake.head_position
+        queue = deque([start])
+        visited = {start: None}
+        
+        while queue:
+            current = queue.popleft()
+            
+            # Se a comida for encontrada
+            if current == self.food.position:
+                # Aqui se faz um backtrack pra encontrar o primeiro movimento.
+                path = []
+                while current != start:
+                    path.append(current)
+                    current = visited[current]
+                
+                # Aqui retorna a primera direção do movimento 
+                if path:
+                    next_pos = path[-1]
+                    return self.calculate_direction(start, next_pos)
+                return None  
+            
+            # Visitar os vizinhos
+            for neighbor in self.get_neighbors(current):
+                if neighbor not in visited:
+                    visited[neighbor] = current
+                    queue.append(neighbor)
+        
+        # Se não exisitir  caminho para a comida, é só escolher um movimento válido.
+        for direction in [Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT]:
+            dx, dy = direction.value
+            new_pos = ((start[0] + dx) % self.width, (start[1] + dy) % self.height)
+            if new_pos not in self.snake.positions[1:]:
+                return direction
+                
+        return None 
+    
+    def dfs(self):
+        """Diferente da bfs a dsf apenas encontra um caminho para comida"""
+        start = self.snake.head_position
+        stack = [start]
+        visited = {start: None}  # Aqui registra a posição anterior pro backtracking
+        
+        while stack:
+            current = stack.pop()
+            
+            # Se a comida for encontrada
+            if current == self.food.position:
+                # Backtrack pra encontrar o primeiro movimento.
+                path = []
+                while current != start:
+                    path.append(current)
+                    current = visited[current]
+                
+                # Aqui retorna a primera direção do movimento 
+                if path:
+                    next_pos = path[-1]
+                    return self.calculate_direction(start, next_pos)
+                return None  
+            
+            # Aqui visita os vizinhos
+            for neighbor in self.get_neighbors(current):
+                if neighbor not in visited:
+                    visited[neighbor] = current
+                    stack.append(neighbor)
+        
+        # Aqui se não houver caminho para a comida, basta escolher um movimento válido
+        for direction in [Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT]:
+            dx, dy = direction.value
+            new_pos = ((start[0] + dx) % self.width, (start[1] + dy) % self.height)
+            if new_pos not in self.snake.positions[1:]:
+                return direction
+                
+        return None
+class Game:
+    def __init__(self):
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("Jogo da Cobrinha com BFS e DFS")
+        self.clock = pygame.time.Clock()
+        self.snake = Snake()
+        self.food = Food()
+        self.graph = Graph(self.snake, self.food)
+        self.algorithm = Algorithm.MANUAL
+        self.game_speed = 10  
+
+if __name__ == "__main__":
+    game = Game()
+    game.run()
+
+
+
+
+    
