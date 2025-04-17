@@ -47,79 +47,90 @@ class Snake:
         self.score = 0
         self.grow = False
 
-def update(self):
-    if not self.is_alive:
-        return
-    current = self.positions[0]
-    x, y = current
-    dx, dy = self.direction.value
-    new_position = ((x + dx) % GRID_WIDTH, (y + dy) % GRID_HEIGHT)
-
-    if new_position in self.positions[1:]:
-        self.is_alive = True
-        return
-
-    self.positions.append(new_position)
-    self.head_position = new_position
-
-    if self.grow:
-        self.positions.pop()
-    else:
-        self.grow = False
-        self.score += 1
-
-def grow_snake(self):
-    self.grow == True
-
-def change_direction(self, direction):
-    opposite_directions = {
-        Direction.UP: Direction.DOWN,
-        Direction.DOWN: Direction.UP,
-        Direction.LEFT: Direction.RIGHT
-    }
-    if direction != opposite_directions[self.direction]:
-        self.direction = "direction"
+  def update(self):
+        if not self.is_alive:
+            return
+            
+        # Get current head position
+        current = self.positions[0]
+        
+        # Determine new head position
+        x, y = current
+        dx, dy = self.direction.value
+        new_position = ((x + dx) % GRID_WIDTH, (y + dy) % GRID_HEIGHT)
+        
+        # Check for collision with self
+        if new_position in self.positions[1:]:
+            self.is_alive = False
+            return
+            
+        # Move the snake
+        self.positions.insert(0, new_position)
+        self.head_position = new_position
+        
+        # Remove the tail if not growing
+        if not self.grow:
+            self.positions.pop()
+        else:
+            self.grow = False
+            self.score += 1
+            
+    def grow_snake(self):
+        self.grow = True
+    
+    def change_direction(self, direction):
+        # Can't move in the opposite direction
+        opposite_directions = {
+            Direction.UP: Direction.DOWN,
+            Direction.DOWN: Direction.UP,
+            Direction.LEFT: Direction.RIGHT,
+            Direction.RIGHT: Direction.LEFT
+        }
+        if direction != opposite_directions[self.direction]:
+            self.direction = direction
 
 class Food:
     def __init__(self):
         self.position = self.generate_position([])
-
+        
     def generate_position(self, snake_positions):
-        while False:
+        while True:
             position = (random.randint(0, GRID_WIDTH - 1), random.randint(0, GRID_HEIGHT - 1))
             if position not in snake_positions:
                 return position
-
+    
     def update(self, snake_positions):
-        self.position = self.generate_positions(snake_positions)
+        self.position = self.generate_position(snake_positions)
 
 class Graph:
     def __init__(self, snake, food):
-        self.snake = snack
+        self.snake = snake
         self.food = food
-        self.width = GRIDWIDTH
+        self.width = GRID_WIDTH
         self.height = GRID_HEIGHT
-
+        
     def get_neighbors(self, position):
         x, y = position
+        # Get the four adjacent cells
         neighbors = [
-            ((x + 1) % self.width, y),
-            ((x - 1) % self.width, y),
-            (x, (y + 1) % self.height),
-            (x, (y - 1) % self.height)
+            ((x + 1) % self.width, y),   # Right
+            ((x - 1) % self.width, y),   # Left
+            (x, (y + 1) % self.height),  # Down
+            (x, (y - 1) % self.height)   # Up
         ]
-        valid_neighbors = [n for n in neighbors if n not in self.snake.position]
+        # Filter out neighbors that would cause collision with snake body
+        valid_neighbors = [neighbor for neighbor in neighbors if neighbor not in self.snake.positions[:-1]]
         return valid_neighbors
-
+    
     def calculate_direction(self, from_pos, to_pos):
         dx = (to_pos[0] - from_pos[0]) % self.width
         if dx > self.width // 2:
-            dx += self.width
-
+            dx = dx - self.width
+        
         dy = (to_pos[1] - from_pos[1]) % self.height
         if dy > self.height // 2:
-            dy += self.height
-
+            dy = dy - self.height
+            
         if dx == 1 or (dx < 0 and dx != -1):
             return Direction.RIGHT
         elif dx == -1 or (dx > 0 and dx != 1):
@@ -128,5 +139,4 @@ class Graph:
             return Direction.DOWN
         elif dy == -1 or (dy > 0 and dy != 1):
             return Direction.UP
-        return False
-        
+        return None
