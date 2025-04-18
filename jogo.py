@@ -2,6 +2,9 @@ import pygame
 from collections import deque
 from enum import Enum
 import random
+import time
+from enum import Enum
+import sys
 
 
 # Inicializar o pygame
@@ -227,97 +230,119 @@ class Game:
         self.food = Food()
         self.graph = Graph(self.snake, self.food)
         self.algorithm = Algorithm.MANUAL
-        self.game_speed = 10  
+        self.game_speed = 10 
+        
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP and self.algorithm == Algorithm.MANUAL:
+                    self.snake.change_direction(Direction.UP)
+                elif event.key == pygame.K_DOWN and self.algorithm == Algorithm.MANUAL:
+                    self.snake.change_direction(Direction.DOWN)
+                elif event.key == pygame.K_LEFT and self.algorithm == Algorithm.MANUAL:
+                    self.snake.change_direction(Direction.LEFT)
+                elif event.key == pygame.K_RIGHT and self.algorithm == Algorithm.MANUAL:
+                    self.snake.change_direction(Direction.RIGHT)
+                elif event.key == pygame.K_1:
+                    self.algorithm = Algorithm.MANUAL
+                elif event.key == pygame.K_2:
+                    self.algorithm = Algorithm.BFS
+                elif event.key == pygame.K_3:
+                    self.algorithm = Algorithm.DFS
+                elif event.key == pygame.K_r:
+                    self.reset()
+                elif event.key == pygame.K_PLUS or event.key == pygame.K_EQUALS:
+                    self.game_speed = min(60, self.game_speed + 5)
+                elif event.key == pygame.K_MINUS:
+                    self.game_speed = max(5, self.game_speed - 5)
+    
+    def update(self):
+        if not self.snake.is_alive:
+            return
+        
+        # Atualizar a direção da cobra com base no algoritmo selecionado
+        if self.algorithm == Algorithm.BFS:
+            direction = self.graph.bfs()
+            if direction:
+                self.snake.change_direction(direction)
+        elif self.algorithm == Algorithm.DFS:
+            direction = self.graph.dfs()
+            if direction:
+                self.snake.change_direction(direction)
+                
+        #Atualiza a posição da cobra
+
+        self.snake.update()
+        
+        # verifica se a cobra comeu a comida
+        if self.snake.head_position == self.food.position:
+            self.snake.grow_snake()
+            self.food.update(self.snake.positions)
+    
+    def draw(self):
+        self.screen.fill(BLACK)
+        
+        for x in range(0, SCREEN_WIDTH, CELL_SIZE):
+            pygame.draw.line(self.screen, GRAY, (x, 0), (x, SCREEN_HEIGHT), 1)
+        for y in range(0, SCREEN_HEIGHT, CELL_SIZE):
+            pygame.draw.line(self.screen, GRAY, (0, y), (SCREEN_WIDTH, y), 1)
+        
+        food_rect = pygame.Rect(
+            self.food.position[0] * CELL_SIZE,
+            self.food.position[1] * CELL_SIZE,
+            CELL_SIZE, CELL_SIZE
+        )
+        pygame.draw.rect(self.screen, RED, food_rect)
+        
+        for i, position in enumerate(self.snake.positions):
+            snake_rect = pygame.Rect(
+                position[0] * CELL_SIZE,
+                position[1] * CELL_SIZE,
+                CELL_SIZE, CELL_SIZE
+            )
+            if i == 0:  
+                pygame.draw.rect(self.screen, BLUE, snake_rect)
+            else:  
+                pygame.draw.rect(self.screen, GREEN, snake_rect)
+        
+        score_text = FONT.render(f"Score: {self.snake.score}", True, WHITE)
+        self.screen.blit(score_text, (10, 10))
+        
+        if self.algorithm == Algorithm.MANUAL:
+            algo_text = FONT.render("Modo: Manual (1)", True, WHITE)
+        elif self.algorithm == Algorithm.BFS:
+            algo_text = FONT.render("Modo: BFS (2)", True, WHITE)
+        else: 
+            algo_text = FONT.render("Modo: DFS (3)", True, WHITE)
+        self.screen.blit(algo_text, (10, 40))
+        
+        
+        speed_text = FONT.render(f"Speed: {self.game_speed} FPS", True, WHITE)
+        self.screen.blit(speed_text, (10, 70))
+        
+        if not self.snake.is_alive:
+            game_over_text = FONT.render("Você Perdeu! Aperte R para tentar novamente", True, WHITE)
+            self.screen.blit(game_over_text, (SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2))
+        
+        pygame.display.flip()
+    
+    def reset(self):
+        self.snake.reset()
+        self.food.update(self.snake.positions)
+    
+    def run(self):
+        while True:
+            self.handle_events()
+            self.update()
+            self.draw()
+            self.clock.tick(self.game_speed)        
 
 if __name__ == "__main__":
     game = Game()
     game.run()
-    
-def handle_events(self):
-    # Lida com todos os eventos do Pygame (teclado, fechamento da janela)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            # Permite controle manual da direção apenas se o modo manual estiver ativo
-            if event.key == pygame.K_UP and self.algorithm == Algorithm.MANUAL:
-                self.snake.change_direction(Direction.UP)
-            elif event.key == pygame.K_DOWN and self.algorithm == Algorithm.MANUAL:
-                self.snake.change_direction(Direction.DOWN)
-            elif event.key == pygame.K_LEFT and self.algorithm == Algorithm.MANUAL:
-                self.snake.change_direction(Direction.LEFT)
-            elif event.key == pygame.K_RIGHT and self.algorithm == Algorithm.MANUAL:
-                self.snake.change_direction(Direction.RIGHT)
-            # Troca entre os modos de controle (manual, BFS, DFS)
-            elif event.key == pygame.K_1:
-                self.algorithm = Algorithm.MANUAL
-            elif event.key == pygame.K_2:
-                self.algorithm = Algorithm.BFS
-            elif event.key == pygame.K_3:
-                self.algorithm = Algorithm.DFS
-            # Reinicia o jogo
-            elif event.key == pygame.K_r:
-                self.reset()
-            # Aumenta ou diminui a velocidade do jogo
-            elif event.key == pygame.K_PLUS or event.key == pygame.K_EQUALS:
-                self.game_speed = min(60, self.game_speed + 5)
-            elif event.key == pygame.K_MINUS:
-                self.game_speed = max(5, self.game_speed - 5)
-
-def update(self):
-    # Não atualiza se a cobra estiver morta (fim de jogo)
-    if not self.snake.is_alive:
-        return
-
-    # Usa o algoritmo selecionado para decidir a direção da cobra
-    if self.algorithm == Algorithm.BFS:
-        direction = self.graph.bfs()
-        if direction:
-            self.snake.change_direction(direction)
-    elif self.algorithm == Algorithm.DFS:
-        direction = self.graph.dfs()
-        if direction:
-            self.snake.change_direction(direction)
-
-    # Atualiza a posição da cobra no grid
-    self.snake.update()
-
-    # Verifica se a cobra comeu a comida
-    if self.snake.head_position == self.food.position:
-        self.snake.grow_snake()  # Aumenta o tamanho da cobra
-        self.food.update(self.snake.positions)  # Posiciona nova comida
-
-def draw(self):
-    # Limpa a tela
-    self.screen.fill(BLACK)
-
-    # Desenha as linhas da grade (opcional)
-    for x in range(0, SCREEN_WIDTH, CELL_SIZE):
-        pygame.draw.line(self.screen, GRAY, (x, 0), (x, SCREEN_HEIGHT), 1)
-    for y in range(0, SCREEN_HEIGHT, CELL_SIZE):
-        pygame.draw.line(self.screen, GRAY, (0, y), (SCREEN_WIDTH, y), 1)
-
-    # Desenha a comida como um quadrado vermelho
-    food_rect = pygame.Rect(
-        self.food.position[0] * CELL_SIZE,
-        self.food.position[1] * CELL_SIZE,
-        CELL_SIZE, CELL_SIZE
-    )
-    pygame.draw.rect(self.screen, RED, food_rect)
-
-    # Desenha cada parte da cobra
-    for i, position in enumerate(self.snake.positions):
-        snake_rect = pygame.Rect(
-            position[0] * CELL_SIZE,
-            position[1] * CELL_SIZE,
-            CELL_SIZE, CELL_SIZE
-        )
-        if i == 0:  # Cabeça em azul
-            pygame.draw.rect(self.screen, BLUE, snake_rect)
-        else:       # Corpo em verde
-            pygame.draw.rect(self.screen, GREEN, snake_rect)
-
 
 
 
