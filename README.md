@@ -84,6 +84,10 @@ Os algoritmos de grafo tratam cada célula no grid como um nó, com arestas cone
 
 Ambos os algoritmos evitam caminhos que causariam colisões com a própria cobrinha.
 
+## Apresentação
+Link da apresentação: [Apresentação](https://youtu.be/uD-o2Ht0bGA)
+
+
 
 
 
