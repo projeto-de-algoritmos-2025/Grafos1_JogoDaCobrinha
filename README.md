@@ -15,8 +15,26 @@ Esta é uma implementação do jogo da cobrinha que demonstra algoritmos de busc
 
 ## Instalação 
 **Linguagem**: Python<br>
-**Framework**: Pygame<br>
+**Framework**: XXXXXX<br>
 Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
+
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/projeto-de-algoritmos-2025/Grafos1_JogoDaCobrinha.git
+   ```
+2. Antes de rodar o projeto, instale as dependências necessárias utilizando o seguinte comando: 
+    ```bash
+   pip install pygame
+   ```
+3.Acesse o diretório do Projeto:   
+```bash
+   cd Grafos1_JogoDaCobrinha
+   ```
+4.Execute o arquivo principal:
+   ```bash
+   python jogo.py
+   ```
+    
 
 ## Uso 
 Teclas de seta: Controlam a cobrinha (modo manual)
