@@ -1,7 +1,7 @@
 # Grafos1_JogoDaCobrinha
 
-**Número da Lista**: X<br>
-**Conteúdo da Disciplina**: XXXXXXXXXX<br>
+
+**Conteúdo da Disciplina**: Grafos 1
 
 ## Alunos
 |Matrícula | Aluno |
@@ -14,8 +14,8 @@ Esta é uma implementação do jogo da cobrinha que demonstra algoritmos de busc
 
 
 ## Instalação 
-**Linguagem**: xxxxxx<br>
-**Framework**: (caso exista)<br>
+**Linguagem**: Python<br>
+**Framework**: Pygame<br>
 Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
 
 ## Uso 
